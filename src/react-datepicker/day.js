@@ -1,16 +1,18 @@
-/** @jsx React.DOM */
+'use strict';
 
 var React = require('react/addons');
 var moment = require('moment');
 
 var Day = React.createClass({
-  handleClick: function(event) {
+  displayName: 'Day',
+
+  handleClick: function handleClick(event) {
     if (this.props.disabled) return;
 
     this.props.onClick(event);
   },
 
-  render: function() {
+  render: function render() {
     classes = React.addons.classSet({
       'datepicker__day': true,
       'datepicker__day--disabled': this.props.disabled,
@@ -18,10 +20,10 @@ var Day = React.createClass({
       'datepicker__day--today': this.props.day.sameDay(moment())
     });
 
-    return (
-      <div className={classes} onClick={this.handleClick}>
-        {this.props.day.day()}
-      </div>
+    return React.createElement(
+      'div',
+      { className: classes, onClick: this.handleClick },
+      this.props.day.day()
     );
   }
 });

@@ -1,6 +1,4 @@
-/**
- * @jsx React.DOM
- */
+'use strict';
 
 var React = window.React || require('react/addons');
 var TypeaheadSelector = require('./selector');
@@ -16,6 +14,8 @@ var moment = require('moment');
  * keyboard or mouse to select.  Requires CSS for MASSIVE DAMAGE.
  */
 var Typeahead = React.createClass({
+  displayName: 'Typeahead',
+
   propTypes: {
     customClasses: React.PropTypes.object,
     maxVisible: React.PropTypes.number,
@@ -28,11 +28,9 @@ var Typeahead = React.createClass({
     onKeyDown: React.PropTypes.func
   },
 
-  mixins: [
-    require('react-onclickoutside')
-  ],
+  mixins: [require('react-onclickoutside')],
 
-  getDefaultProps: function() {
+  getDefaultProps: function getDefaultProps() {
     return {
       options: [],
       header: "Category",
@@ -40,12 +38,14 @@ var Typeahead = React.createClass({
       customClasses: {},
       defaultValue: "",
       placeholder: "",
-      onKeyDown: function(event) { return },
-      onOptionSelected: function(option) { }
+      onKeyDown: function onKeyDown(event) {
+        return;
+      },
+      onOptionSelected: function onOptionSelected(option) {}
     };
   },
 
-  getInitialState: function() {
+  getInitialState: function getInitialState() {
     return {
       // The set of all options... Does this need to be state?  I guess for lazy load...
       options: this.props.options,
@@ -65,15 +65,15 @@ var Typeahead = React.createClass({
     };
   },
 
-  componentWillReceiveProps: function(nextProps) {
-    this.setState({options: nextProps.options,
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    this.setState({ options: nextProps.options,
       header: nextProps.header,
       datatype: nextProps.datatype,
-      visible: nextProps.options});
+      visible: nextProps.options });
   },
 
-  getOptionsForValue: function(value, options) {
-    var result = fuzzy.filter(value, options).map(function(res) {
+  getOptionsForValue: function getOptionsForValue(value, options) {
+    var result = fuzzy.filter(value, options).map(function (res) {
       return res.string;
     });
 
@@ -83,14 +83,14 @@ var Typeahead = React.createClass({
     return result;
   },
 
-  setEntryText: function(value) {
+  setEntryText: function setEntryText(value) {
     if (this.refs.entry != null) {
       this.refs.entry.getDOMNode().value = value;
     }
     this._onTextEntryUpdated();
   },
 
-  _renderIncrementalSearchResults: function() {
+  _renderIncrementalSearchResults: function _renderIncrementalSearchResults() {
     if (!this.state.focused) {
       return "";
     }
@@ -105,36 +105,34 @@ var Typeahead = React.createClass({
       return "";
     }
 
-    return (
-      <TypeaheadSelector
-        ref="sel" options={ this.state.visible } header={this.state.header}
-        onOptionSelected={ this._onOptionSelected }
-        customClasses={this.props.customClasses} />
-    );
+    return React.createElement(TypeaheadSelector, {
+      ref: 'sel', options: this.state.visible, header: this.state.header,
+      onOptionSelected: this._onOptionSelected,
+      customClasses: this.props.customClasses });
   },
 
-  _onOptionSelected: function(option) {
+  _onOptionSelected: function _onOptionSelected(option) {
     var nEntry = this.refs.entry.getDOMNode();
     nEntry.focus();
     nEntry.value = option;
-    this.setState({visible: this.getOptionsForValue(option, this.state.options),
-                   selection: option,
-                   entryValue: option});
+    this.setState({ visible: this.getOptionsForValue(option, this.state.options),
+      selection: option,
+      entryValue: option });
 
     this.props.onOptionSelected(option);
   },
 
-  _onTextEntryUpdated: function() {
+  _onTextEntryUpdated: function _onTextEntryUpdated() {
     var value = "";
     if (this.refs.entry != null) {
       value = this.refs.entry.getDOMNode().value;
     }
-    this.setState({visible: this.getOptionsForValue(value, this.state.options),
-                   selection: null,
-                   entryValue: value});
+    this.setState({ visible: this.getOptionsForValue(value, this.state.options),
+      selection: null,
+      entryValue: value });
   },
 
-  _onEnter: function(event) {
+  _onEnter: function _onEnter(event) {
     if (!this.refs.sel.state.selection) {
       return this.props.onKeyDown(event);
     }
@@ -142,17 +140,16 @@ var Typeahead = React.createClass({
     this._onOptionSelected(this.refs.sel.state.selection);
   },
 
-  _onEscape: function() {
-    this.refs.sel.setSelectionIndex(null)
+  _onEscape: function _onEscape() {
+    this.refs.sel.setSelectionIndex(null);
   },
 
-  _onTab: function(event) {
-    var option = this.refs.sel.state.selection ?
-      this.refs.sel.state.selection : this.state.visible[0];
-    this._onOptionSelected(option)
+  _onTab: function _onTab(event) {
+    var option = this.refs.sel.state.selection ? this.refs.sel.state.selection : this.state.visible[0];
+    this._onOptionSelected(option);
   },
 
-  eventMap: function(event) {
+  eventMap: function eventMap(event) {
     var events = {};
 
     events[KeyEvent.DOM_VK_UP] = this.refs.sel.navUp;
@@ -164,11 +161,11 @@ var Typeahead = React.createClass({
     return events;
   },
 
-  _onKeyDown: function(event) {
+  _onKeyDown: function _onKeyDown(event) {
     // If Enter pressed
     if (event.keyCode === KeyEvent.DOM_VK_RETURN || event.keyCode === KeyEvent.DOM_VK_ENTER) {
       // If no options were provided so we can match on anything
-      if (this.props.options.length===0) {
+      if (this.props.options.length === 0) {
         this._onOptionSelected(this.state.entryValue);
       }
 
@@ -195,37 +192,37 @@ var Typeahead = React.createClass({
     event.preventDefault();
   },
 
-  _onFocus: function(event) {
-    this.setState({focused: true});
+  _onFocus: function _onFocus(event) {
+    this.setState({ focused: true });
   },
 
-  handleClickOutside: function(event) {
-    this.setState({focused:false});
+  handleClickOutside: function handleClickOutside(event) {
+    this.setState({ focused: false });
   },
 
-  isDescendant: function(parent, child) {
-     var node = child.parentNode;
-     while (node != null) {
-         if (node == parent) {
-             return true;
-         }
-         node = node.parentNode;
-     }
-     return false;
+  isDescendant: function isDescendant(parent, child) {
+    var node = child.parentNode;
+    while (node != null) {
+      if (node == parent) {
+        return true;
+      }
+      node = node.parentNode;
+    }
+    return false;
   },
 
-  _handleDateChange: function(date) {
+  _handleDateChange: function _handleDateChange(date) {
     this.props.onOptionSelected(date.format("YYYY-MM-DD"));
   },
 
-  _showDatePicker: function() {
+  _showDatePicker: function _showDatePicker() {
     if (this.state.datatype == "date") {
       return true;
     }
     return false;
   },
 
-  inputRef: function() {
+  inputRef: function inputRef() {
     if (this._showDatePicker()) {
       return this.refs.datepicker.refs.dateinput.refs.entry;
     } else {
@@ -233,35 +230,26 @@ var Typeahead = React.createClass({
     }
   },
 
-  render: function() {
-    var inputClasses = {}
+  render: function render() {
+    var inputClasses = {};
     inputClasses[this.props.customClasses.input] = !!this.props.customClasses.input;
-    var inputClassList = React.addons.classSet(inputClasses)
+    var inputClassList = React.addons.classSet(inputClasses);
 
     var classes = {
       typeahead: true
-    }
+    };
     classes[this.props.className] = !!this.props.className;
     var classList = React.addons.classSet(classes);
 
     if (this._showDatePicker()) {
-      return (
-        <span ref="input" className={classList} onFocus={this._onFocus}>
-          <DatePicker ref="datepicker" dateFormat={"YYYY-MM-DD"} selected={moment()} onChange={this._handleDateChange} onKeyDown={this._onKeyDown}/>
-        </span>
-      );
+      return React.createElement('span', { ref: 'input', className: classList, onFocus: this._onFocus }, React.createElement(DatePicker, { ref: 'datepicker', dateFormat: "YYYY-MM-DD", selected: moment(), onChange: this._handleDateChange, onKeyDown: this._onKeyDown }));
     }
 
-    return (
-      <span ref="input" className={classList} onFocus={this._onFocus}>
-        <input ref="entry" type="text"
-          placeholder={this.props.placeholder}
-          className={inputClassList} defaultValue={this.state.entryValue}
-          onChange={this._onTextEntryUpdated} onKeyDown={this._onKeyDown}
-          />
-        { this._renderIncrementalSearchResults() }
-      </span>
-    );
+    return React.createElement('span', { ref: 'input', className: classList, onFocus: this._onFocus }, React.createElement('input', { ref: 'entry', type: 'text',
+      placeholder: this.props.placeholder,
+      className: inputClassList, defaultValue: this.state.entryValue,
+      onChange: this._onTextEntryUpdated, onKeyDown: this._onKeyDown
+    }), this._renderIncrementalSearchResults());
   }
 });
 

@@ -1,6 +1,4 @@
-/**
- * @jsx React.DOM
- */
+'use strict';
 
 var React = window.React || require('react/addons');
 var TypeaheadOption = require('./option');
@@ -10,6 +8,8 @@ var TypeaheadOption = require('./option');
  * of the typeahead
  */
 var TypeaheadSelector = React.createClass({
+  displayName: 'TypeaheadSelector',
+
   propTypes: {
     options: React.PropTypes.array,
     header: React.PropTypes.string,
@@ -18,67 +18,73 @@ var TypeaheadSelector = React.createClass({
     onOptionSelected: React.PropTypes.func
   },
 
-  getDefaultProps: function() {
+  getDefaultProps: function getDefaultProps() {
     return {
       selectionIndex: null,
       customClasses: {},
-      onOptionSelected: function(option) { }
+      onOptionSelected: function onOptionSelected(option) {}
     };
   },
 
-  getInitialState: function() {
+  getInitialState: function getInitialState() {
     return {
       selectionIndex: this.props.selectionIndex,
       selection: this.getSelectionForIndex(this.props.selectionIndex)
     };
   },
 
-  componentWillReceiveProps: function(nextProps) {
-    this.setState({selectionIndex: null});
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    this.setState({ selectionIndex: null });
   },
 
-  render: function() {
+  render: function render() {
     var classes = {
       "typeahead-selector": true
     };
     classes[this.props.customClasses.results] = this.props.customClasses.results;
     var classList = React.addons.classSet(classes);
 
-    var results = this.props.options.map(function(result, i) {
-      return (
-        <TypeaheadOption ref={result} key={result}
-          hover={this.state.selectionIndex === i}
-          customClasses={this.props.customClasses}
-          onClick={this._onClick.bind(this, result)}>
-          { result }
-        </TypeaheadOption>
+    var results = this.props.options.map(function (result, i) {
+      return React.createElement(
+        TypeaheadOption,
+        { ref: result, key: result,
+          hover: this.state.selectionIndex === i,
+          customClasses: this.props.customClasses,
+          onClick: this._onClick.bind(this, result) },
+        result
       );
     }, this);
-    return <ul className={classList}>
-      <li className="header">{this.props.header}</li>
-        { results }
-      </ul>;
+    return React.createElement(
+      'ul',
+      { className: classList },
+      React.createElement(
+        'li',
+        { className: 'header' },
+        this.props.header
+      ),
+      results
+    );
   },
 
-  setSelectionIndex: function(index) {
+  setSelectionIndex: function setSelectionIndex(index) {
     this.setState({
       selectionIndex: index,
-      selection: this.getSelectionForIndex(index),
+      selection: this.getSelectionForIndex(index)
     });
   },
 
-  getSelectionForIndex: function(index) {
+  getSelectionForIndex: function getSelectionForIndex(index) {
     if (index === null) {
       return null;
     }
     return this.props.options[index];
   },
 
-  _onClick: function(result) {
+  _onClick: function _onClick(result) {
     this.props.onOptionSelected(result);
   },
 
-  _nav: function(delta) {
+  _nav: function _nav(delta) {
     if (!this.props.options) {
       return;
     }
@@ -98,15 +104,15 @@ var TypeaheadSelector = React.createClass({
       newIndex -= this.props.options.length;
     }
     var newSelection = this.getSelectionForIndex(newIndex);
-    this.setState({selectionIndex: newIndex,
-                   selection: newSelection});
+    this.setState({ selectionIndex: newIndex,
+      selection: newSelection });
   },
 
-  navDown: function() {
+  navDown: function navDown() {
     this._nav(1);
   },
 
-  navUp: function() {
+  navUp: function navUp() {
     this._nav(-1);
   }
 
