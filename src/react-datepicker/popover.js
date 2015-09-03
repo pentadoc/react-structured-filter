@@ -1,7 +1,8 @@
 'use strict';
 
 var React = require('react/addons');
-var Tether = require('tether/tether');
+var Tether = typeof window !== 'undefined' &&
+             typeof document !== 'undefined' ? require('tether') : false;
 
 var Popover = React.createClass({
   displayName: 'Popover',
@@ -55,7 +56,7 @@ var Popover = React.createClass({
 
     if (this._tether != null) {
       this._tether.setOptions(this._tetherOptions());
-    } else {
+    } else if (Tether){
       this._tether = new Tether(this._tetherOptions());
     }
   },
